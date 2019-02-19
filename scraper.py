@@ -35,6 +35,7 @@ def get_info(rower_id):
 		return
 	else:
 		soup = BeautifulSoup(rower_page, features='html.parser')
+		year_regex = re.compile('(\d{4})')
 
 		# Start by checking if the person is in fact an athlete (there
 		# are also pages for referees and other officials).
@@ -59,11 +60,15 @@ def get_info(rower_id):
 			birthdate = birthdate.find_next('div', attrs={'class': 'dd'})
 			if birthdate is not None:
 				birthdate = birthdate.text.strip()
+				birthyear_search = year_regex.search(birthdate)
+				if birthyear_search is not None:
+					birthyear = birthyear_search.group(1)
+				else:
+					birthyear = None
 		competitions = soup.find_all('h3', attrs={'class': 'table-caption-title'})
 		competition_years = []
 		if competitions is not None:
 			for competition in competitions:
-				year_regex = re.compile('^(\d{4})')
 				competition = competition.text.strip()
 				year_search = year_regex.search(competition)
 				if year_search is not None:
@@ -79,6 +84,7 @@ def get_info(rower_id):
 			'country': country,
 			'gender': gender,
 			'birthdate': birthdate,
+			'birthyear': birthyear,
 			'competition_years': competition_years
 		}
 
