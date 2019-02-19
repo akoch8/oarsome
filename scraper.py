@@ -96,7 +96,9 @@ def main():
 	print('Looking for athletes...')
 	out = open('rowers.txt', 'w')
 	out.write('name\tcountry\tgender\tbirthdate\tcompetition_years\tfirst\tlast\n')
-	for i in range(6000, 6020):
+	for i in range(1, 48343):
+		if i % 5000 == 0:
+			print('{0}...'.format(i))
 		rower_info = get_info(i)
 		if rower_info is not None:
 			info_string = ''
