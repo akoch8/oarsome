@@ -56,6 +56,7 @@ def get_info(rower_id):
 		if gender is not None:
 			gender = gender.text.strip()
 		birthdate = soup.find(text='Birthdate')
+		birthyear = None
 		if birthdate is not None:
 			birthdate = birthdate.find_next('div', attrs={'class': 'dd'})
 			if birthdate is not None:
@@ -63,8 +64,6 @@ def get_info(rower_id):
 				birthyear_search = year_regex.search(birthdate)
 				if birthyear_search is not None:
 					birthyear = birthyear_search.group(1)
-				else:
-					birthyear = None
 		competitions = soup.find_all('h3', attrs={'class': 'table-caption-title'})
 		competition_years = []
 		if competitions is not None:
@@ -100,10 +99,10 @@ def load_page(rower_id):
 
 def main():
 	print('Looking for athletes...')
-	out = open('rowers.txt', 'w')
+	out = open('rowers_2.txt', 'w')
 	out.write('name\tcountry\tgender\tbirthdate\tcompetition_years\tfirst\tlast\n')
-	for i in range(1, 48343):
-		if i % 5000 == 0:
+	for i in range(17691, 48343):
+		if i % 2500 == 0:
 			print('{0}...'.format(i))
 		rower_info = get_info(i)
 		if rower_info is not None:
