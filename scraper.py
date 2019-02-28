@@ -44,7 +44,7 @@ def get_info(rower_id):
 			return
 		else:
 			person_type = person_type.text.strip().lower()
-			if person_type != 'athlete':
+			if 'athlete' not in person_type:
 				return
 		rower_name = soup.find('span', attrs={'itemprop': 'name'})
 		if rower_name is not None:
