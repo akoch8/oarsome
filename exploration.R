@@ -15,6 +15,9 @@ str(x)
 x = na.omit(x)
 nrow(x)
 
+# Remove duplicate entries.
+x = unique(x)
+
 # Which are the most and least common countries?
 countries = table(x$country)
 length(countries)
@@ -39,21 +42,21 @@ x[which(x$career > 30),c('name', 'country', 'gender', 'birthyear', 'first', 'las
 
 # Let's remove those rowers that have a large gap in their competitive career as
 # these are more likely to be errors in the data.
-suspiciousRowers = x[which(x$career > 30),]
-gaps = vector()
-for (i in 1:nrow(suspiciousRowers)) {
-	years = suspiciousRowers$competition_years[i]
-	years = as.numeric(unique(unlist(strsplit(years, ','))))
-	years = years[order(years)]
-	maxGap = 0
-	for (j in 1:(length(years) - 1)) {
-		gap = years[j + 1] - years[j]
-		maxGap = ifelse(gap > maxGap, gap, maxGap)
-	}
-	gaps[i] = maxGap
-}
-suspiciousRowers = suspiciousRowers[which(gaps > 10),]
-x = x[!rownames(x) %in% rownames(suspiciousRowers),]
+#suspiciousRowers = x[which(x$career > 30),]
+#gaps = vector()
+#for (i in 1:nrow(suspiciousRowers)) {
+#	years = suspiciousRowers$competition_years[i]
+#	years = as.numeric(unique(unlist(strsplit(years, ','))))
+#	years = years[order(years)]
+#	maxGap = 0
+#	for (j in 1:(length(years) - 1)) {
+#		gap = years[j + 1] - years[j]
+#		maxGap = ifelse(gap > maxGap, gap, maxGap)
+#	}
+#	gaps[i] = maxGap
+#}
+#suspiciousRowers = suspiciousRowers[which(gaps > 10),]
+#x = x[!rownames(x) %in% rownames(suspiciousRowers),]
 
 # Check how old the rowers were when they participated in their first competition.
 x$startAge = x$first - x$birthyear
@@ -62,14 +65,25 @@ range(x$startAge)
 # There are some very young rowers (could be coxwains), but a negative age at the
 # first competition obviously does not make sense. Let's remove the youngest ones.
 x = x[-which(x$startAge < 10),]
+nrow(x)
 range(x$startAge)
-hist(x$startAge, xlim=c(0, 80), col='#85c4c999', border=NA, ylim=c(0, 2500), breaks=seq(0, 100, 1))
-startAgeTable = table(x$startAge)
-log(max(startAgeTable))
+#startAgeTable = table(x$startAge)
+
 # Check how old the rowers were when they participated in their last competition.
 x$endAge = x$last - x$birthyear
 range(x$endAge)
+
+hist(x$startAge, col='#85c4c999', border=NA, xlim=c(0, 100), ylim=c(0, 2500), breaks=seq(0, 100, 1))
 hist(x$endAge, xlim=c(0, 80), col='#3b738f99', border=NA, ylim=c(0, 2500), breaks=seq(0, 100, 1), add=T)
+abline(v=30, lty=1, lwd=1, col='#2e2e2e')
+
+# Let's put a cutoff on the starting age. Most (if not all) elite international rowers
+# start their career as a teenager or in their early twenties. If we put the cutoff at
+# 30, we're sure to catch all of them (barring some rare exceptions). Rowers that start
+# after 30 could be coxwains, master rowers or coastal rowers.
+nrow(x[which(x$startAge < 30),]) / nrow(x) * 100
+x = x[which(x$startAge < 30),]
+plot(x$birthyear, x$career, bty='n', pch=20, col='#3b738f10', xlim=c(1900, 2019))
 
 # Plot the career data by year of birth (and age).
 #ede5cf,#e0c2a2,#d39c83,#c1766f,#a65461,#813753,#541f3f
@@ -95,7 +109,7 @@ for (i in 1:length(uniqueBirthYears)) {
 	birthYear = uniqueBirthYears[i]
 	yearData = x[which(x$birthyear == birthYear),]
 	for (j in 1:nrow(yearData)) {
-		rect(yearData$first[j] - birthYear, i - 1, yearData$last[j] + 1 - birthYear, i, border=NA, col='#541f3f05')
+		rect(yearData$startAge[j], i - 1, yearData$endAge[j], i, border=NA, col='#3b738f10')
 	}
 	#for (j in 1:100) {
 	#	yearDataSub = yearData[which(yearData$startAge <= j & yearData$endAge >= j),]
@@ -108,32 +122,53 @@ for (i in 1:length(uniqueBirthYears)) {
 }
 axis(1, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
 axis(1, at=seq(0, 100, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
-axis(2, at=seq(0, 90, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(2, at=seq(0, 90, 10), labels=seq(1900, 1990, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
+axis(2, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
+axis(2, at=seq(0, 100, 10), labels=seq(1900, 2000, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
 
 # Plot the career data by year of birth (and calendar year).
 uniqueBirthYears = unique(x$birthyear)
-par(mar=c(2, 2, 2, 2))
+par(mar=c(4, 4, 2, 2))
 plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(1900, 2020), ylim=c(0, length(uniqueBirthYears)))
 for (i in 1:length(uniqueBirthYears)) {
 	birthYear = uniqueBirthYears[i]
 	yearData = x[which(x$birthyear == birthYear),]
 	for (j in 1:nrow(yearData)) {
-		rect(yearData$first[j], i - 1, yearData$last[j] + 1, i, border=NA, col='#ff000010')
+		rect(yearData$first[j], i - 1, yearData$last[j] + 1, i, border=NA, col='#3b738f10')
 	}
 }
-axis(1, at=seq(1900, 2020, by=20), col.axis='#3f3f3f', col='#3f3f3f', lwd=0.5)
+axis(1, at=seq(1900, 2020, by=20), labels=NA, col.axis='#3f3f3f', col='#3f3f3f', lwd=0.5)
+axis(1, at=seq(1900, 2020, by=20), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
+axis(2, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
+axis(2, at=seq(0, 100, 10), labels=seq(1900, 2000, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
 
 # There is much less data available from the early years. Let's try looking at
-# the data for rowers born after WWII.
-xSub = x[which(x$birthyear > 1945),]
+# the data for rowers born after 1950.
+xSub = x[which(x$birthyear > 1950),]
 #xSub = xSub[which(xSub$gender == 'W'),]
+nrow(xSub) / nrow(x) * 100
 dim(xSub)
 head(xSub)
 
 # Plot the career data by year of birth (and calendar year).
-png('img/careersByYearOfBirth.png', width=10, height=12, units='in', res=150)
+formatName = function(name) {
+	n = strsplit(name, split=' ')[[1]]
+	formattedName = paste0(toupper(substring(n, 1, 1)), tolower(substring(n, 2)), collapse=' ')
+	return(formattedName)
+}
 
+markSingleRower = function(uniqueBirthYears, rowerData, col) {
+	yPosLine = length(uniqueBirthYears) - which(uniqueBirthYears == rowerData$birthyear) + 0.5
+	segments(rowerData$first, yPosLine, rowerData$last + 1, yPosLine, lwd=2, col=col)
+	segments(rowerData$first, yPosLine + 0.25, rowerData$first, yPosLine - 0.25, lwd=2, col=col)
+	segments(rowerData$last + 1, yPosLine + 0.25, rowerData$last + 1, yPosLine - 0.25, lwd=2, col=col)
+	rowerName = formatName(rowerData$name)
+	text(rowerData$last + 2, length(uniqueBirthYears) - which(uniqueBirthYears == rowerData$birthyear) + 0.5, rowerName, adj=c(0, 0.5), col=col, font=2)
+}
+
+
+png('img/careersByYearOfBirth-2.png', width=10, height=12, units='in', res=150)
+
+# Randomize the rows to avoid distracting patterns in the figure.
 xSub = xSub[sample(nrow(xSub)),]
 xSub = xSub[order(xSub$birthyear),]
 uniqueBirthYears = unique(xSub$birthyear)
@@ -145,18 +180,19 @@ title(ylab='Year of birth', col.lab='#3f3f3f', line=3.5, cex=1.5)
 # Mark the Olympic Games.
 olympics = seq(1960, 2016, 4)
 for (i in 1:length(olympics)) {
-	rect(olympics[i], 0, olympics[i] + 1, length(uniqueBirthYears), border=NA, col='#f3f3f3')
+	#rect(olympics[i], 0, olympics[i] + 1, length(uniqueBirthYears), border=NA, col='#f3f3f3')
+	abline(v=olympics[i] + 1, col='#f3f3f3', lwd=2)
 }
 
 for (i in 1:length(uniqueBirthYears)) {
 	birthYear = uniqueBirthYears[i]
 	yearData = xSub[which(xSub$birthyear == birthYear),]
 	for (j in 1:nrow(yearData)) {
-		rect(yearData$first[j], length(uniqueBirthYears) - i + 1, yearData$last[j] + 1, length(uniqueBirthYears) - i, border=NA, col='#541f3f05')
+		rect(yearData$first[j], length(uniqueBirthYears) - i + 1, yearData$last[j] + 1, length(uniqueBirthYears) - i, border=NA, col='#3b738f10')#541f3f05
 	}
 }
 
-# Add lines showing the average start and end of all the careers for each birthyear.
+# Add lines showing the median start and end of all the careers for each birthyear.
 avgStart = rep(NA, length(uniqueBirthYears))
 avgEnd = rep(NA, length(uniqueBirthYears))
 avgCareer = rep(NA, length(uniqueBirthYears))
@@ -171,26 +207,28 @@ for (i in 1:length(uniqueBirthYears)) {
 points(avgStart, seq(length(uniqueBirthYears), 1), type='s', col='#ffdd9a', lwd=2)
 points(avgEnd, seq(length(uniqueBirthYears), 1), type='s', col='#ffdd9a', lwd=2)
 
-# Mark a particular rower.
-redgrave = xSub[which(xSub$name == 'Steve REDGRAVE'),]
-rect(redgrave$first, length(uniqueBirthYears) - which(uniqueBirthYears == redgrave$birthyear) + 1, redgrave$last + 1, length(uniqueBirthYears) - which(uniqueBirthYears == redgrave$birthyear), border='#3f3f3f', lwd=2, col=NA)
-text(redgrave$last + 2, length(uniqueBirthYears) - which(uniqueBirthYears == redgrave$birthyear) + 0.5, 'Steve Redgrave', adj=c(0, 0.5), col='#3f3f3f', font=2)
+# Mark particular rowers.
+markSingleRower(xSub[which(xSub$name == 'Steve REDGRAVE'),], redgrave, '#3f3f3f')
+
 #lipa = xSub[which(xSub$name == 'Elisabeta LIPA'),]
+nrow(xSub[grepl('LIPA', xSub$name),])
+
 me = xSub[which(xSub$name == 'Alexander KOCH' & xSub$country == 'BEL'),]
 rect(me$first, length(uniqueBirthYears) - which(uniqueBirthYears == me$birthyear) + 1, me$last + 1, length(uniqueBirthYears) - which(uniqueBirthYears == me$birthyear), border='#f3f3f3', lwd=2, col=NA)
 text(me$last + 2, length(uniqueBirthYears) - which(uniqueBirthYears == me$birthyear) + 0.5, 'This is me!', adj=c(0, 0.5), col='#f3f3f3', font=2)
+
 longestCareer = xSub[which(xSub$career == max(xSub$career)),]
-longestCareerName = longestCareer$name
-n = strsplit(longestCareerName, split=' ')[[1]]
-longestCareerName = paste0(toupper(substring(n, 1, 1)), tolower(substring(n, 2)), collapse=' ')
+longestCareerName = formatName(longestCareer$name)
+#n = strsplit(longestCareerName, split=' ')[[1]]
+#longestCareerName = paste0(toupper(substring(n, 1, 1)), tolower(substring(n, 2)), collapse=' ')
 rect(longestCareer$first, length(uniqueBirthYears) - which(uniqueBirthYears == longestCareer$birthyear) + 1, longestCareer$last + 1, length(uniqueBirthYears) - which(uniqueBirthYears == longestCareer$birthyear), border='#3f3f3f', lwd=2, col=NA)
-text(longestCareer$last + 2, length(uniqueBirthYears) - which(uniqueBirthYears == longestCareer$birthyear) + 0.5, longestCareerName, adj=c(0, 0.5), col='#3f3f3f', font=2)
+text(longestCareer$first - 1, length(uniqueBirthYears) - which(uniqueBirthYears == longestCareer$birthyear) + 0.5, longestCareerName, adj=c(1, 0.5), col='#3f3f3f', font=2)
 
 # Add the axes.
 axis(1, at=seq(1960, 2020, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
 axis(1, at=seq(1960, 2020, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
-axis(2, at=seq(5, 45, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(2, at=seq(5, 45, 10), labels=seq(1990, 1950, -10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
+axis(2, at=seq(3, 53, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
+axis(2, at=seq(3, 53, 10), labels=seq(2000, 1950, -10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
 
 dev.off()
 
