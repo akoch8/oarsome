@@ -100,7 +100,7 @@ def load_page(rower_id):
 def main():
 	print('Looking for athletes...')
 	out = open('rowers_1.txt', 'w')
-	out.write('name\tcountry\tgender\tbirthdate\tcompetition_years\tfirst\tlast\n')
+	out.write('name\tcountry\tgender\tbirthdate\tbirthyear\tcompetition_years\tfirst\tlast\n')
 	for i in range(1, 17690):
 		if i % 2500 == 0:
 			print('{0}...'.format(i))

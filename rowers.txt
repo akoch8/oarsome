@@ -1,4 +1,4 @@
-name	country	gender	birthdate	competition_years	first	last
+name	country	gender	birthdate	birthyear	competition_years	first	last
 Jesper A. AAGARD	DEN	M	7 Sep 1985	1985	1992,1978	1978	1992
 Jan AAKERNES	NOR	M	None	None	2005,1992,1989,1984,1977	1977	2005
 Ville AALTONEN	FIN	M	18 Nov 1974	1974	1994,1994	1994	1994
