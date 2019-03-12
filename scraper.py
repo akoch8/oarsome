@@ -79,12 +79,28 @@ def get_info(rower_id):
 			#if len(competition_years) > 0:
 			#	first_competition = min(competition_years)
 			#	last_competition = max(competition_years)
+		results = soup.find_all('div', attrs={'class': 'recentResultsTableWrap'})
+		results_list = []
+		if results is not None:
+			for result in results:
+				race = result.find('tbody').find_all('td', attrs={'class': 't1-Race'})
+				if race is not None:
+					race = race.text.strip()
+				position = result.find('tbody').find_all('td', attrs={'class': 't1-Position'})
+				if position is not None:
+					position = position.text.strip()
+				category = result.find('tbody').find_all('td', attrs={'class': 't1-class'})
+				if category is not None:
+					category = category.text.strip()
+				results_list.append(','.join([race, position, category]))
+			results_list = [x for x in results_list if x is not None]
 		return {'name': rower_name,
 			'country': country,
 			'gender': gender,
 			'birthdate': birthdate,
 			'birthyear': birthyear,
-			'competition_years': competition_years
+			'competition_years': competition_years,
+			'results': results_list
 		}
 
 
@@ -99,18 +115,18 @@ def load_page(rower_id):
 
 def main():
 	print('Looking for athletes...')
-	out = open('rowers_1.txt', 'w')
-	out.write('name\tcountry\tgender\tbirthdate\tbirthyear\tcompetition_years\tfirst\tlast\n')
-	for i in range(1, 17690):
+	out = open('rowers_results_test.txt', 'w')
+	out.write('name\tcountry\tgender\tbirthdate\tbirthyear\tcompetition_years\tfirst\tlast\tresults\n')
+	for i in range(17671, 17690):
 		if i % 2500 == 0:
 			print('{0}...'.format(i))
 		rower_info = get_info(i)
 		if rower_info is not None:
 			info_string = ''
 			for key, value in rower_info.items():
-				if key != 'competition_years':
+				if key != 'competition_years' and key != 'results':
 					info_string += '{0}\t'.format(value)
-				else:
+				elif key == 'competition_years':
 					if len(value) > 0:
 						info_string += ','.join(value)
 						first_competition = min(value)
@@ -118,6 +134,11 @@ def main():
 						info_string += '\t{0}\t{1}'.format(first_competition, last_competition)
 					else:
 						info_string += 'None\tNone\tNone'
+				elif key == 'results':
+					if len(value) > 0:
+						info_string += '\t{0}'.format(',,'.value)
+					else:
+						info_string += 'None'
 			info_string += '\n'
 			out.write(info_string)
 	out.close()
