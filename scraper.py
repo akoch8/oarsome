@@ -83,13 +83,15 @@ def get_info(rower_id):
 		results_list = []
 		if results is not None:
 			for result in results:
-				race = result.find('tbody').find_all('td', attrs={'class': 't1-Race'})
+				# The final result of a competition always comes first,
+				# so we can simply use find() instead of find_all().
+				race = result.find('td', attrs={'headers': 't1-Race'})
 				if race is not None:
 					race = race.text.strip()
-				position = result.find('tbody').find_all('td', attrs={'class': 't1-Position'})
+				position = result.find('td', attrs={'headers': 't1-Position'})
 				if position is not None:
 					position = position.text.strip()
-				category = result.find('tbody').find_all('td', attrs={'class': 't1-class'})
+				category = result.find('td', attrs={'headers': 't1-class'})
 				if category is not None:
 					category = category.text.strip()
 				results_list.append(','.join([race, position, category]))
@@ -117,7 +119,7 @@ def main():
 	print('Looking for athletes...')
 	out = open('rowers_results_test.txt', 'w')
 	out.write('name\tcountry\tgender\tbirthdate\tbirthyear\tcompetition_years\tfirst\tlast\tresults\n')
-	for i in range(17671, 17690):
+	for i in range(20001, 20010):
 		if i % 2500 == 0:
 			print('{0}...'.format(i))
 		rower_info = get_info(i)
@@ -136,7 +138,7 @@ def main():
 						info_string += 'None\tNone\tNone'
 				elif key == 'results':
 					if len(value) > 0:
-						info_string += '\t{0}'.format(',,'.value)
+						info_string += '\t{0}'.format(',,'.join(value))
 					else:
 						info_string += 'None'
 			info_string += '\n'
