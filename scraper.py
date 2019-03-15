@@ -75,7 +75,7 @@ def get_info(rower_id):
 				else:
 					year = None
 				competition_years.append(year)
-			competition_years = [x for x in competition_years if x is not None]
+			competition_years = [str(x) for x in competition_years]
 			#if len(competition_years) > 0:
 			#	first_competition = min(competition_years)
 			#	last_competition = max(competition_years)
@@ -94,7 +94,7 @@ def get_info(rower_id):
 				category = result.find('td', attrs={'headers': 't1-class'})
 				if category is not None:
 					category = category.text.strip()
-				results_list.append(','.join([race, position, category]))
+				results_list.append(','.join([str(x) for x in [race, position, category]]))
 			results_list = [x for x in results_list if x is not None]
 		return {'name': rower_name,
 			'country': country,
@@ -117,9 +117,9 @@ def load_page(rower_id):
 
 def main():
 	print('Looking for athletes...')
-	out = open('rowers_results_test.txt', 'w')
+	out = open('rowers_results_5.txt', 'w')
 	out.write('name\tcountry\tgender\tbirthdate\tbirthyear\tcompetition_years\tfirst\tlast\tresults\n')
-	for i in range(20001, 20010):
+	for i in range(40001, 48343):#48343
 		if i % 2500 == 0:
 			print('{0}...'.format(i))
 		rower_info = get_info(i)
@@ -130,7 +130,7 @@ def main():
 					info_string += '{0}\t'.format(value)
 				elif key == 'competition_years':
 					if len(value) > 0:
-						info_string += ','.join(value)
+						info_string += ';'.join(value)
 						first_competition = min(value)
 						last_competition = max(value)
 						info_string += '\t{0}\t{1}'.format(first_competition, last_competition)
@@ -138,9 +138,9 @@ def main():
 						info_string += 'None\tNone\tNone'
 				elif key == 'results':
 					if len(value) > 0:
-						info_string += '\t{0}'.format(',,'.join(value))
+						info_string += '\t{0}'.format(';'.join(value))
 					else:
-						info_string += 'None'
+						info_string += '\tNone'
 			info_string += '\n'
 			out.write(info_string)
 	out.close()
