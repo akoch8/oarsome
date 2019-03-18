@@ -90,81 +90,19 @@ nrow(x[which(x$startAge < 35),]) / nrow(x) * 100
 x = x[which(x$startAge < 35),]
 plot(x$birthyear, x$career, bty='n', pch=20, col='#3b738f10', xlim=c(1900, 2019))
 
-# Plot the career data by year of birth (and age).
-#ede5cf,#e0c2a2,#d39c83,#c1766f,#a65461,#813753,#541f3f
-#d1eeea,#a8dbd9,#85c4c9,#68abb8,#4f90a6,#3b738f,#2a5674
-#freqCol = colorRampPalette(c('#d1eeea', '#a8dbd9', '#85c4c9', '#68abb8', '#4f90a6', '#3b738f', '#2a5674'))(10)
-#freqCol = c(
-#	rep(freqCol[1], 1),
-#	rep(freqCol[2], 1),
-#	rep(freqCol[3], 1),
-#	rep(freqCol[4], 2),
-#	rep(freqCol[5], 2),
-#	rep(freqCol[6], 3),
-#	rep(freqCol[7], 5),
-#	rep(freqCol[8], 10),
-#	rep(freqCol[9], 25),
-#	rep(freqCol[10], 50)
-#)
-uniqueBirthYears = unique(x$birthyear)
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(0, 100), ylim=c(0, length(uniqueBirthYears)))
-colorsUsed = vector()
-for (i in 1:length(uniqueBirthYears)) {
-	birthYear = uniqueBirthYears[i]
-	yearData = x[which(x$birthyear == birthYear),]
-	for (j in 1:nrow(yearData)) {
-		rect(yearData$startAge[j], i - 1, yearData$endAge[j], i, border=NA, col='#3b738f10')
-	}
-	#for (j in 1:100) {
-	#	yearDataSub = yearData[which(yearData$startAge <= j & yearData$endAge >= j),]
-	#	if (nrow(yearDataSub) > 0) {
-	#		rectCol = freqCol[ceiling(nrow(yearDataSub) / max(startAgeTable) * 100)]
-	#		rect(j - 1, i - 1, j, i, border=NA, col=rectCol)
-	#		colorsUsed = c(colorsUsed, rectCol)
-	#	}
-	#}
-}
-axis(1, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(1, at=seq(0, 100, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
-axis(2, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(2, at=seq(0, 100, 10), labels=seq(1900, 2000, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
-
-# Plot the career data by year of birth (and calendar year).
-uniqueBirthYears = unique(x$birthyear)
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(1900, 2020), ylim=c(0, length(uniqueBirthYears)))
-for (i in 1:length(uniqueBirthYears)) {
-	birthYear = uniqueBirthYears[i]
-	yearData = x[which(x$birthyear == birthYear),]
-	for (j in 1:nrow(yearData)) {
-		rect(yearData$first[j], i - 1, yearData$last[j] + 1, i, border=NA, col='#3b738f10')
-	}
-}
-axis(1, at=seq(1900, 2020, by=20), labels=NA, col.axis='#3f3f3f', col='#3f3f3f', lwd=0.5)
-axis(1, at=seq(1900, 2020, by=20), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
-axis(2, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(2, at=seq(0, 100, 10), labels=seq(1900, 2000, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
-
-
-
-
-# There is much less data available from the early years. Let's try looking at
+# There isn't a whole lot of data available from the early years. Let's try looking at
 # the data for rowers born after 1950.
 xSub = x[which(x$birthyear > 1950),]
-#xSub = xSub[which(xSub$gender == 'W'),]
 nrow(xSub) / nrow(x) * 100
 dim(xSub)
 head(xSub)
 
-
-
+# Functions for creating the figures.
 formatName = function(name) {
 	n = strsplit(name, split=' ')[[1]]
 	formattedName = paste0(toupper(substring(n, 1, 1)), tolower(substring(n, 2)), collapse=' ')
 	return(formattedName)
 }
-
 markSingleRower = function(uniqueBirthYears, rowerData, col) {
 	if (nrow(rowerData) > 0) {
 		yPosLine = length(uniqueBirthYears) - which(uniqueBirthYears == rowerData$birthyear) + 0.5
@@ -180,7 +118,6 @@ markSingleRower = function(uniqueBirthYears, rowerData, col) {
 		par(xpd=F)
 	}
 }
-
 markSingleRower2 = function(uniqueBirthYears, rowerData, col) {
 	if (nrow(rowerData) > 0) {
 		yPosLine = length(uniqueBirthYears) - which(uniqueBirthYears == rowerData$birthyear) + 0.5
@@ -196,7 +133,6 @@ markSingleRower2 = function(uniqueBirthYears, rowerData, col) {
 		par(xpd=F)
 	}
 }
-
 plotCareersByYOB = function(file, data, uniqueBirthYears, rectCol) {
 	png(file, width=10, height=12, units='in', res=150)
 
@@ -218,7 +154,7 @@ plotCareersByYOB = function(file, data, uniqueBirthYears, rectCol) {
 		yearData = data[which(data$birthyear == birthYear),]
 		if (nrow(yearData) > 0) {
 			for (j in 1:nrow(yearData)) {
-				rect(yearData$first[j], length(uniqueBirthYears) - i + 1, yearData$last[j] + 1, length(uniqueBirthYears) - i, border=NA, col=rectCol)#541f3f05
+				rect(yearData$first[j], length(uniqueBirthYears) - i + 1, yearData$last[j] + 1, length(uniqueBirthYears) - i, border=NA, col=rectCol)
 			}
 		}
 	}
@@ -253,7 +189,6 @@ plotCareersByYOB = function(file, data, uniqueBirthYears, rectCol) {
 	axis(2, at=seq(3, 53, 10), labels=seq(2000, 1950, -10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
 	dev.off()
 }
-
 plotCareersByStartAge = function(file, data, uniqueBirthYears, rectCol) {
 	png(file, width=10, height=12, units='in', res=150)
 	
@@ -303,103 +238,34 @@ plotCareersByStartAge = function(file, data, uniqueBirthYears, rectCol) {
 	dev.off()
 }
 
-
 # Plot the career data by year of birth (and calendar year).
 uniqueBirthYears = unique(xSub$birthyear)
-plotCareersByYOB('img/careersByYearOfBirth-6.png', xSub, uniqueBirthYears, '#3b738f10')
+plotCareersByYOB('img/careersByYearOfBirth.png', xSub, uniqueBirthYears, '#3b738f10')
 
 # Plot the career data by year of birth and start age.
-plotCareersByStartAge('img/careersByStartAge-3.png', xSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge.png', xSub, uniqueBirthYears, '#3b738f10')
 
 # Split up the athletes in two groups based on:
-# - gender
+# - gender (color inspiration from: https://blog.datawrapper.de/gendercolor/)
 # - started racing as a junior
 # - best result = medal
 xSubSub = xSub[which(xSub$gender == 'M'),]
-plotCareersByYOB('img/careersByYearOfBirth-men-2.png', xSubSub, uniqueBirthYears, '#18847610')
-plotCareersByStartAge('img/careersByStartAge-men-2.png', xSubSub, uniqueBirthYears, '#18847610')
+plotCareersByYOB('img/careersByYearOfBirth-men.png', xSubSub, uniqueBirthYears, '#18847610')
+plotCareersByStartAge('img/careersByStartAge-men.png', xSubSub, uniqueBirthYears, '#18847610')
 xSubSub = xSub[which(xSub$gender == 'W'),]
-plotCareersByYOB('img/careersByYearOfBirth-women-2.png', xSubSub, uniqueBirthYears, '#591a8e10')
-plotCareersByStartAge('img/careersByStartAge-women-2.png', xSubSub, uniqueBirthYears, '#591a8e10')
+plotCareersByYOB('img/careersByYearOfBirth-women.png', xSubSub, uniqueBirthYears, '#591a8e10')
+plotCareersByStartAge('img/careersByStartAge-women.png', xSubSub, uniqueBirthYears, '#591a8e10')
 startedAsJunior = grepl('J', xSub$results)
 xSubSub = xSub[startedAsJunior,]
-plotCareersByYOB('img/careersByYearOfBirth-junior-1.png', xSubSub, uniqueBirthYears, '#3b738f10')
-plotCareersByStartAge('img/careersByStartAge-junior-1.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByYOB('img/careersByYearOfBirth-junior.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge-junior.png', xSubSub, uniqueBirthYears, '#3b738f10')
 xSubSub = xSub[!startedAsJunior,]
-plotCareersByYOB('img/careersByYearOfBirth-senior-1.png', xSubSub, uniqueBirthYears, '#3b738f10')
-plotCareersByStartAge('img/careersByStartAge-senior-1.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByYOB('img/careersByYearOfBirth-senior.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge-senior.png', xSubSub, uniqueBirthYears, '#3b738f10')
 medalled = grepl('FA? Final,[123]', xSub$results)
 xSubSub = xSub[medalled,]
-plotCareersByYOB('img/careersByYearOfBirth-medal-1.png', xSubSub, uniqueBirthYears, '#f1a34010')
-plotCareersByStartAge('img/careersByStartAge-medal-1.png', xSubSub, uniqueBirthYears, '#f1a34010')
+plotCareersByYOB('img/careersByYearOfBirth-medal.png', xSubSub, uniqueBirthYears, '#f1a34010')
+plotCareersByStartAge('img/careersByStartAge-medal.png', xSubSub, uniqueBirthYears, '#f1a34010')
 xSubSub = xSub[!medalled,]
-plotCareersByYOB('img/careersByYearOfBirth-no-medal-1.png', xSubSub, uniqueBirthYears, '#88888810')
-plotCareersByStartAge('img/careersByStartAge-no-medal-1.png', xSubSub, uniqueBirthYears, '#88888810')
-
-
-
-
-
-
-
-
-
-# Plot the career data by year of birth (and age).
-uniqueBirthYears = unique(xSub$birthyear)
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(0, 70), ylim=c(0, 50))
-for (i in 1:length(uniqueBirthYears)) {
-	birthYear = uniqueBirthYears[i]
-	yearData = xSub[which(xSub$birthyear == birthYear),]
-	for (j in 1:nrow(yearData)) {
-		rect(yearData$first[j] - birthYear, i - 1, yearData$last[j] + 1 - birthYear, i, border=NA, col='#541f3f05')
-	}
-}
-axis(1, at=seq(0, 70, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(1, at=seq(0, 70, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.5)
-axis(2, at=seq(5, 45, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
-axis(2, at=seq(5, 45, 10), labels=seq(1950, 1990, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
-
-# Draw all careers individually.
-xSub = xSub[order(xSub$first),]
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(1950, 2020), ylim=c(0, nrow(xSub)))
-for (i in 1:nrow(xSub)) {
-	rect(xSub$birthyear[i], i - 1, xSub$first[i], i, border=NA, col='#ede5cf')
-	rect(xSub$first[i], i - 1, xSub$last[i] + 1, i, border=NA, col='#541f3f')
-}
-
-xSub = xSub[order(xSub$first),]
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(0, 80), ylim=c(0, nrow(xSub)))
-for (i in 1:nrow(xSub)) {
-	#rect(xSub$startAge[i], i - 1, xSub$first[i], i, border=NA, col='#ede5cf')
-	rect(xSub$startAge[i], i - 1, xSub$endAge[i] + 1, i, border=NA, col='#541f3f')
-}
-
-
-head(xSub)
-max(xSub$career)
-max(xSub$startAge)
-
-
-xSub = xSub[order(xSub$birthyear),]
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(0, max(xSub$career)), ylim=c(0, nrow(xSub)))
-for (i in 1:nrow(xSub)) {
-	#rect(xSub$startAge[i], i - 1, xSub$first[i], i, border=NA, col='#ede5cf')
-	rect(0, i - 1, xSub$career[i], i, border=NA, col='#541f3f')
-}
-
-
-xSub = xSub[sample(nrow(xSub)),]
-xSub = xSub[order(xSub$birthyear),]
-par(mar=c(4, 4, 2, 2))
-plot(0, 0, type='n', bty='n', xaxt='n', yaxt='n', xlab='', ylab='', xlim=c(-max(xSub$startAge), max(xSub$career)), ylim=c(0, nrow(xSub)))
-for (i in 1:nrow(xSub)) {
-	rect(-xSub$startAge[i], nrow(xSub) - i + 1, 0, nrow(xSub) - i, border=NA, col='#c1766f')
-	rect(0, nrow(xSub) - i + 1, xSub$career[i], nrow(xSub) - i, border=NA, col='#541f3f')
-}
-
-
-
+plotCareersByYOB('img/careersByYearOfBirth-no-medal.png', xSubSub, uniqueBirthYears, '#88888810')
+plotCareersByStartAge('img/careersByStartAge-no-medal.png', xSubSub, uniqueBirthYears, '#88888810')
