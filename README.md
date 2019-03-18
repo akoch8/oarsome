@@ -1,4 +1,4 @@
-ROWERS ACTIVITY
-===============
+OARSOME FORTYSOMETHINGS
+=======================
 
-Inspired by the "Age of athletes extending over time" topic on [the Pudding](https://pudding.cool/) backlog.
+An exploration of the career length of elite rowers, inspired by the "Age of athletes extending over time" topic on [the Pudding](https://pudding.cool/) backlog.
