@@ -146,6 +146,9 @@ axis(1, at=seq(1900, 2020, by=20), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, lin
 axis(2, at=seq(0, 100, 10), labels=NA, col='#3f3f3f', col.axis='#3f3f3f', lwd=0.5)
 axis(2, at=seq(0, 100, 10), labels=seq(1900, 2000, 10), col='#3f3f3f', col.axis='#3f3f3f', lwd=0, line=-0.2, las=1)
 
+
+
+
 # There is much less data available from the early years. Let's try looking at
 # the data for rowers born after 1950.
 xSub = x[which(x$birthyear > 1950),]
@@ -303,21 +306,21 @@ plotCareersByStartAge = function(file, data, uniqueBirthYears, rectCol) {
 
 # Plot the career data by year of birth (and calendar year).
 uniqueBirthYears = unique(xSub$birthyear)
-plotCareersByYOB('img/careersByYearOfBirth-4.png', xSub, uniqueBirthYears, '#3b738f10')
+plotCareersByYOB('img/careersByYearOfBirth-6.png', xSub, uniqueBirthYears, '#3b738f10')
 
 # Plot the career data by year of birth and start age.
-plotCareersByStartAge('img/careersByStartAge-2.png', xSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge-3.png', xSub, uniqueBirthYears, '#3b738f10')
 
 # Split up the athletes in two groups based on:
 # - gender
 # - started racing as a junior
 # - best result = medal
 xSubSub = xSub[which(xSub$gender == 'M'),]
-plotCareersByYOB('img/careersByYearOfBirth-men-1.png', xSubSub, uniqueBirthYears, '#b3580610')
-plotCareersByStartAge('img/careersByStartAge-men-1.png', xSubSub, uniqueBirthYears, '#b3580610')
+plotCareersByYOB('img/careersByYearOfBirth-men-2.png', xSubSub, uniqueBirthYears, '#18847610')
+plotCareersByStartAge('img/careersByStartAge-men-2.png', xSubSub, uniqueBirthYears, '#18847610')
 xSubSub = xSub[which(xSub$gender == 'W'),]
-plotCareersByYOB('img/careersByYearOfBirth-women-1.png', xSubSub, uniqueBirthYears, '#54278810')
-plotCareersByStartAge('img/careersByStartAge-women-1.png', xSubSub, uniqueBirthYears, '#54278810')
+plotCareersByYOB('img/careersByYearOfBirth-women-2.png', xSubSub, uniqueBirthYears, '#591a8e10')
+plotCareersByStartAge('img/careersByStartAge-women-2.png', xSubSub, uniqueBirthYears, '#591a8e10')
 startedAsJunior = grepl('J', xSub$results)
 xSubSub = xSub[startedAsJunior,]
 plotCareersByYOB('img/careersByYearOfBirth-junior-1.png', xSubSub, uniqueBirthYears, '#3b738f10')
