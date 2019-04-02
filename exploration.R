@@ -45,24 +45,6 @@ x[which(x$career > 40),c('name', 'country', 'gender', 'birthyear', 'first', 'las
 x = x[which(x$career < 40),]
 nrow(x)
 
-# Let's remove those rowers that have a large gap in their competitive career as
-# these are more likely to be errors in the data.
-#suspiciousRowers = x[which(x$career > 30),]
-#gaps = vector()
-#for (i in 1:nrow(suspiciousRowers)) {
-#	years = suspiciousRowers$competition_years[i]
-#	years = as.numeric(unique(unlist(strsplit(years, ','))))
-#	years = years[order(years)]
-#	maxGap = 0
-#	for (j in 1:(length(years) - 1)) {
-#		gap = years[j + 1] - years[j]
-#		maxGap = ifelse(gap > maxGap, gap, maxGap)
-#	}
-#	gaps[i] = maxGap
-#}
-#suspiciousRowers = suspiciousRowers[which(gaps > 10),]
-#x = x[!rownames(x) %in% rownames(suspiciousRowers),]
-
 # Check how old the rowers were when they participated in their first competition.
 x$startAge = x$first - x$birthyear
 range(x$startAge)
@@ -72,7 +54,6 @@ range(x$startAge)
 x = x[-which(x$startAge < 10),]
 nrow(x)
 range(x$startAge)
-#startAgeTable = table(x$startAge)
 
 # Check how old the rowers were when they participated in their last competition.
 x$endAge = x$last - x$birthyear
