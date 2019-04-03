@@ -230,6 +230,7 @@ plotCareersByStartAge('img/careersByStartAge.png', xSub, uniqueBirthYears, '#3b7
 # - gender (color inspiration from: https://blog.datawrapper.de/gendercolor/)
 # - started racing as a junior
 # - best result = medal
+# - lightweight vs heavyweight
 xSubSub = xSub[which(xSub$gender == 'M'),]
 plotCareersByYOB('img/careersByYearOfBirth-men.png', xSubSub, uniqueBirthYears, '#18847610')
 plotCareersByStartAge('img/careersByStartAge-men.png', xSubSub, uniqueBirthYears, '#18847610')
@@ -250,3 +251,11 @@ plotCareersByStartAge('img/careersByStartAge-medal.png', xSubSub, uniqueBirthYea
 xSubSub = xSub[!medalled,]
 plotCareersByYOB('img/careersByYearOfBirth-no-medal.png', xSubSub, uniqueBirthYears, '#88888810')
 plotCareersByStartAge('img/careersByStartAge-no-medal.png', xSubSub, uniqueBirthYears, '#88888810')
+weight = grepl('L[MW]', xSub$results)
+xSubSub = xSub[weight,]
+plotCareersByYOB('img/careersByYearOfBirth-light.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge-light.png', xSubSub, uniqueBirthYears, '#3b738f10')
+xSubSub = xSub[!weight,]
+plotCareersByYOB('img/careersByYearOfBirth-heavy.png', xSubSub, uniqueBirthYears, '#3b738f10')
+plotCareersByStartAge('img/careersByStartAge-heavy.png', xSubSub, uniqueBirthYears, '#3b738f10')
+
